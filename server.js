@@ -4,14 +4,11 @@ var mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 var morgan = require("morgan");
 var db = require("./config");
-var ejs = require("ejs");
-const { Int32 } = require("mongodb");
 var cors = require("cors");
 var app = express();
 app.set("view engine", "ejs");
 var port = process.env.port || 5000;
 var srcpath = path.join(__dirname, "/public");
-app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
@@ -33,7 +30,7 @@ var BookSchema = new Schema(
 );
 var model = mongoose.model("Books", BookSchema, "Books");
 app.get("/display", function (req, res) {
-  console.log("Displying");
+  console.log("Displaying");
   model
     .find()
     .sort({ title: 1 })
@@ -73,11 +70,6 @@ app.post("/delete", function (req, res) {
   });
 });
 
-//Update data from database
-app.get("/update.html", function (req, res) {
-  res.sendFile(__dirname + "/" + "update.html");
-});
-
 app.post("/update", function (req, res) {
   var title = req.body.title;
   var author = req.body.author;
@@ -94,26 +86,6 @@ app.post("/update", function (req, res) {
       res.json({
         status: "success",
       });
-    });
-});
-
-//--------------SEARCH------------------------------------------
-app.get("/search.html", function (req, res) {
-  res.sendFile(__dirname + "/" + "search.html");
-});
-
-app.get("/search", function (req, res) {
-  //var empidnum=parseInt(req.query.empid)  // if empid is an integer
-  var empidnum = req.query.empid;
-  model
-    .find({ empid: empidnum }, { empname: 1, empid: 1, _id: 0 })
-    .exec()
-    .then(function (docs) {
-      if (docs == "") {
-        res.send("<br/>" + empidnum + ":" + "<b>Emplyee Not Found</b>");
-      } else {
-        res.status(200).json(docs);
-      }
     });
 });
 
